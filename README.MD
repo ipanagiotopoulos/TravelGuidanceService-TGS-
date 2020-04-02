@@ -17,18 +17,19 @@ destination to the user that matches all criteria, at their best.
 
 #1.1 USE
 
--Select a category of user's travel rights. (Travellers/Tourist/Business)
--Fill out name and age.
--Select the prefered destinations.
--Fill out level of interest within Museums and Cafe/Bar/Restaurants. (Not allowed/taken into account if chose Business).
--Choice to filter out all cities with rain. (Not allowed/taken into account if chose Business).
--Receive suggested destination based on the information/criteria provided. (If Business, suggested destination is one closest to current city of residence, as in, the one closer to the user)
+- Select a category of user's travel rights. (Travellers/Tourist/Business)
+- Fill out name and age.
+- Fill out current residence/city. **(Ensure the country code is correct!)**
+- Select the prefered destinations.
+- Fill out level of interest within Museums and Cafe/Bar/Restaurants. (Not allowed/taken into account if chose Business)
+- Choice to filter out all cities with rain. (Not allowed/taken into account if chose Business).
+- Receive suggested destination based on the information/criteria provided. (If Business, suggested destination is one closest to current city of residence, as in, the one closer to the user)
 
 #1.2 USER-RIGHTS
 
--View the landing page.
--View the special offers page.
--Submit information/criteria and receive suggested destination.
+- View the landing page.
+- View the special offers page.
+- Submit information/criteria and receive suggested destination.
 
 #2.1 ADMINISTRATION-INTRODUCTION
 
@@ -36,16 +37,16 @@ Travel Guidance Service application allows users with administration rights to p
 
 #2.2 ADMIN-RIGHTS
 
--View all pages including Administration/Free Ticket
--View the database of all Travellers/Tourist/Business users.
--Delete Travellers/Tourists/Business through Administration.
--Select Travellers based on a specific city (same suggested/prefered destination) and run the selection algorithm for the free ticket.
+- View all pages including Administration/Free Ticket
+- View the database of all Travellers/Tourist/Business users.
+- Delete Travellers/Tourists/Business through Administration.
+- Select Travellers based on a specific city (same suggested/prefered destination) and run the selection algorithm for the free ticket.
 
 #3 HOW TO RUN
 
 The repository contains two project files: 
--TravelGuidanceServiceFinal 
--Java3
+1. TravelGuidanceServiceFinal 
+2. -Java3
 
 #3.1 RUNNING FRONT-END
 
@@ -88,7 +89,4 @@ You want to have both client-side and server-side running, you will have two loc
 http://localhost:5000/ is the one you require, you also need to be running the backend.
 
 Ensure to be running both hosts at the same time otherwise you will not get the result you are looking for!
-
-
-
 
