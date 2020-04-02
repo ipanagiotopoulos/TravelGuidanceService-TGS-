@@ -3,7 +3,7 @@
 
 <form class="ui form" action="/results" method="GET">
     <div class="test">
-<div class="inline fields">
+<div class="required inline fields">
 <label>Which kind of class/category do you fall under?</label>
 <div class="field">
   <div class="ui radio checkbox">
@@ -27,18 +27,18 @@
 <div class="ui container">
     <div class="five wide field">
       <label>Name</label>
-      <input type="text" name="name" placeholder="Name...">
+      <input type="text" name="name" placeholder="Name..." required>
     </div>
      <div class="five wide field">
       <label>Age</label>
-      <input type="number" name="age" placeholder="Age...">
+      <input type="number" name="age" placeholder="Age..." required>
     </div>
     <div class="five wide field">
         <label>Which city do you currently reside?</label>
-        <input type="text" name="currentCity" placeholder="E.g Athens,GR">
+        <input type="text" name="currentCity" placeholder="E.g Athens,GR" required>
       </div>
       <label><strong>Choose your prefered destinations</label>
-      <select name="preferedCities" multiple="" class="ui dropdown">
+      <select name="preferedCities" multiple="" class="ui dropdown" required>
       <option value="Athens,GR">Athens, Greece</option>
       <option value="Aarhus,DK">Aarhus, Denmark</option>
       <option value="Berlin,DE">Berlin, Germany</option>
