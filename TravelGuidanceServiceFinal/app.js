@@ -11,14 +11,29 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false }));
- 
+
  
 // RESTFUL ROUTES
  
 app.get("/", function(req, res){
-    res.render("index");
+    res.render("login");
 });
- 
+app.get("/logedin", function(req, res) { 
+  res.render("index"); 
+}); 
+app.get("/admin",function(req,res) {
+res.render("adminindex.ejs");
+});
+
+app.get("/register",function(req,res){
+  res.render("register");
+});
+
+
+
+app.get("/information",function(req,res){});
+
+
 app.get("/offers", function(req, res){
     res.render("offers");
 });
