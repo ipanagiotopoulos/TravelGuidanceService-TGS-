@@ -21,6 +21,9 @@ app.get("/", function(req, res){
 app.get("/logedin", function(req, res) { 
   res.render("index"); 
 }); 
+app.post("/logout",function(req,res){
+
+});
 app.get("/admin",function(req,res) {
 res.render("adminindex.ejs");
 });
@@ -195,6 +198,7 @@ app.post("/removeTravellers",function(req,res){
         console.error('Error:', error);
       });
 })
+
 app.listen(5000, function() {
     console.log('Server up and running.');
   });
