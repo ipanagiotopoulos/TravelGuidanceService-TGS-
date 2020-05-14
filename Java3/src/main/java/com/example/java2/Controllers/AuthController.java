@@ -130,7 +130,11 @@ public class AuthController {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+<<<<<<< HEAD
 	@PostMapping("/logout")
+=======
+		@PostMapping("/logout")
+>>>>>>> 146f597dac87d7ff4faee2cbab0b2114be8f7529
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity logoutUser() {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -138,4 +142,9 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse("logout successful"));
 	}
 
+<<<<<<< HEAD
 }
+=======
+	
+}
+>>>>>>> 146f597dac87d7ff4faee2cbab0b2114be8f7529
