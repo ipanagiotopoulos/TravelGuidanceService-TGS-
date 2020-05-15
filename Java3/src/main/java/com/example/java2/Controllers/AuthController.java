@@ -63,7 +63,7 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-		 System.out.println("here"+loginRequest.getPassword());
+		System.out.println(loginRequest.getPassword());
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -103,8 +103,8 @@ public class AuthController {
 
 		Set<String> strRoles = signUpRequest.getRoles();
 		Set<Role> roles = new HashSet<>();
+
 		if (strRoles == null) {
-			System.out.println("here");
 			Role userRole = roleRepository.findByName(ERole.ROLE_USER)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			roles.add(userRole);
@@ -130,21 +130,13 @@ public class AuthController {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
-<<<<<<< HEAD
 	@PostMapping("/logout")
-=======
-		@PostMapping("/logout")
->>>>>>> 146f597dac87d7ff4faee2cbab0b2114be8f7529
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity logoutUser() {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication(null);
 		return ResponseEntity.ok(new MessageResponse("logout successful"));
 	}
 
-<<<<<<< HEAD
-}
-=======
 	
 }
->>>>>>> 146f597dac87d7ff4faee2cbab0b2114be8f7529
