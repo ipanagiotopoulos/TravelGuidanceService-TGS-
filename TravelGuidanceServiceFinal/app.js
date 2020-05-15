@@ -3,7 +3,8 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var fetch = require('node-fetch');
- 
+var localStorage = require('localStorage');
+var jwt = require('jwt-simple');
  
 // app configurations
 app.set("view engine", "ejs");
@@ -11,12 +12,75 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false }));
-
- 
+var jwt = require('jsonwebtoken');
 // RESTFUL ROUTES
- 
+
+
+
 app.get("/", function(req, res){
     res.render("login");
+});
+app.post("/login",function(req,res){   //new endpoint  an implementation needed
+  // LGTM!
+  //console.log(req.body);
+ // HERE!!!!!!!!!!!
+  var role;
+  var name;
+  fetch('http://localhost:8080/web/auth/signin',{
+       
+        method: "POST",
+ 
+        // Adding body or contents to send
+        body: JSON.stringify(
+          {
+             "username":req.body.username,
+              "password":req.body.password
+          }
+
+        ),
+         
+        // Adding headers to the request
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+      })
+      .then(response => {
+        response.json()
+          .then(responseJson => {
+           
+             var decoded = jwt.decode(responseJson.accessToken, 'z97r#s');
+             if(decoded!=null){
+             role=decoded.role[0]["authority"];
+          
+            localStorage.setItem('token', responseJson.accessToken);
+            if( role==="ROLE_USER"){
+              res.render("index.ejs")
+              }
+              else if(role==="ROLE_ADMIN"){
+                res.render("adminindex.ejs")
+              }
+            else{
+                res.render("login.ejs");
+              }
+            }
+            else{
+              res.render("login.ejs");
+            }
+            //localStorage.setItem('token', responseJson.accessToken)
+            // set localStorage with your preferred name,..
+            // ..say 'my_token', and the value sent by server
+         
+            //console.log(localStorage);
+            
+            // you may also want to redirect after you have saved localStorage:
+            // window.location.assign("http://www.example.org")
+          })
+      })
+      .then((data) => {
+        
+      }).catch((error) => {
+        console.error('Error:', error);
+      });
 });
 app.get("/logedin", function(req, res) { 
   res.render("index"); 
@@ -31,7 +95,62 @@ res.render("adminindex.ejs");
 app.get("/register",function(req,res){
   res.render("register");
 });
+app.post("/registered",function(req,res){
+  var message;
+  fetch('http://localhost:8080/web/auth/signup',{
+       
+        method: "POST",
+ 
+        // Adding body or contents to send
+        body: JSON.stringify(
+          {
+             "username":req.body.email[0],
+             "roles":["ROLE_USER"],
+             "password":req.body.password,
+             "email":req.body.email[1]
+          }
 
+        ),
+         
+        // Adding headers to the request
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+      })
+      .then(response => {
+        response.json()
+          .then(responseJson => {
+            console.log(responseJson);
+
+            var decoded = jwt.decode(responseJson.accessToken, 'z97r#s');
+            console.log(decoded);
+            message=responseJson.message;
+            var infosuccess={
+              registrymessage:message
+            }
+             
+           localStorage.setItem('token', responseJson.accessToken);
+           if(message==="User registered successfully!"){
+            res.render("index.ejs",{message:message});
+             }
+           else{
+            res.send({message:infosuccess});
+             }
+           
+            // set localStorage with your preferred name,..
+            // ..say 'my_token', and the value sent by server
+            
+            
+            // you may also want to redirect after you have saved localStorage:
+            // window.location.assign("http://www.example.org")
+          })
+      })
+      .then((data) => {
+      
+      }).catch((error) => {
+        console.error('Error:', error);
+      });
+});
 
 
 app.get("/information",function(req,res){});
@@ -78,7 +197,7 @@ app.get("/results", function(req, res){
       });}
       else{
         console.log("edw");
-        fetch('http://localhost:8080//Save'+req.query.category+'BasedOnWeather' ,{
+        fetch('http://localhost:8080/Save'+req.query.category+'BasedOnWeather' ,{
        
         method: "POST",
          
@@ -116,7 +235,7 @@ app.get("/results", function(req, res){
 });
  
 app.get("/administration", function(req, res){
-    fetch('http://localhost:8080//All'+req.query.choice)  //req.query.choice should be Traveller,Tourist or Business.
+    fetch('http://localhost:8080/All'+req.query.choice)  //req.query.choice should be Traveller,Tourist or Business.
   .then((response) => {
     return response.json();
   })
@@ -126,7 +245,19 @@ app.get("/administration", function(req, res){
   });
 });
 app.get("/freeticket",function(req,res){
-  fetch('http://localhost:8080//AnyTraveller')  //req.query.choice should be Traveller,Tourist or Business.
+  var token = localStorage.getItem('token');
+  console.log(`Authorization=Bearer ${token}`)
+  let headers = {"Content-Type": "application/json"};
+    if (token) {
+      headers["Authorization"] = ` Bearer ${token}`;
+    }
+    console.log( headers)
+  fetch('http://localhost:8080/AnyTraveller',{
+    headers: {
+    "Content-type": "application/json; charset=UTF-8",
+    "Authorization": ` Bearer ${token}`
+    }
+  })//req.query.choice should be Traveller,Tourist or Business.
   .then((response) => {
     return response.json();
   })
@@ -144,7 +275,7 @@ app.post("/freeticketwinner",function(req,res){   //new endpoint  an implementat
  // HERE!!!!!!!!!!!
   console.log(req.body.type);
   var response;
-  fetch('http://localhost:8080//FreeTicket?city='+req.body.candidateCity,{
+  fetch('http://localhost:8080/FreeTicket?city='+req.body.candidateCity,{
        
         method: "POST",
  
@@ -172,7 +303,7 @@ app.post("/freeticketwinner",function(req,res){   //new endpoint  an implementat
 app.post("/removeTravellers",function(req,res){
   console.log(req.body.id);
   
-  fetch('http://localhost:8080//Delete'+req.body.typeoftraveller ,{
+  fetch('http://localhost:8080/Delete'+req.body.typeoftraveller ,{
        
         method: "POST",
          

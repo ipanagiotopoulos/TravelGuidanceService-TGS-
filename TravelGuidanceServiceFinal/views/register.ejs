@@ -8,7 +8,7 @@
    
     
         <!-- LOGIN FORM -->
-        <form class="ui form" action="/login" method="post">
+        <form class="ui form" action="/registered" method="post">
             <div class="form-group">
                 <label>Username</label>
                 <input type="text" class="form-control" name="email">
@@ -44,5 +44,11 @@
 
         </div>
         </div>
+         <script>$('#password, #passwordconf').on('keyup', function () {
+            if ($('#password').val() == $('#passwordconf').val()) {
+              $('#message').html('Matching').css('color', 'green');
+            } else 
+              $('#message').html('Passwords have to match!').css('color', 'red');
+          });</script>
 
   <%- include("partials/footer") %>
