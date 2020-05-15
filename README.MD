@@ -73,6 +73,15 @@ The back-end can be ran with two options:
 2. Visual Studio Code. (Configure on your own)
 
 **To run through Eclipse IDE:**
+**Need to have installed Spring Tools Suite STS(Spring Tools 4 (aka Spring Tool Suite 4))**
+
+
+**If you do not have the STS plugin on your Eclipse IDE,you can find in the Eclipse's Marketplace(Help>Eclipse Marketplace)
+by searching "Spring Tools 4 (aka Spring Tool Suite 4)"**
+
+
+**After installing the plugin,restart the Eclipse IDE  and select the workspace that you have the Java3 folder.**
+
 **Click on TravellerGuidanceService**
 **Right click > Run as > Spring Boot App > Matching items(select): Java2Application - com.example.java2 > OK**
 
@@ -82,6 +91,10 @@ access the client-side of the application. (http://localhost:5000/ on any select
 Requirements:
 Have STS plugin (i.e SpringSource Tool Suite) installed within Eclipse IDE.
 
+
+Node.js 
+
+
 #3.3 CONCLUSION
 
 You want to have both client-side and server-side running, you will have two localhosts running at the end. (5000 and 8080)
@@ -89,4 +102,3 @@ You want to have both client-side and server-side running, you will have two loc
 http://localhost:5000/ is the one you require, you also need to be running the backend.
 
 Ensure to be running both hosts at the same time otherwise you will not get the result you are looking for!
-
