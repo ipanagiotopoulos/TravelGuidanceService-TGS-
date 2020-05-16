@@ -27,6 +27,7 @@ import com.example.java2.Repositories.TravellerRepository;
 import com.example.java2.RetrieveData.OpenData;
 
 @RestController
+@RequestMapping("/web/api")
 public class Rest_controller {
 	public static List<City> listofcities;
 	@Autowired CityRepository cr;

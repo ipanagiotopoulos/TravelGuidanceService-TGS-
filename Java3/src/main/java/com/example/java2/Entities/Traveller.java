@@ -3,6 +3,7 @@ package com.example.java2.Entities;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +14,7 @@ import com.example.java2.Entities.Enums.Museums;
 @Document
 public class Traveller implements Comparable {
 	
-protected static ArrayList<Traveller> TravellersByOrder;
+    private long timestamp;
 	@Id
     private String id;
 	@Indexed
@@ -40,6 +41,7 @@ protected static ArrayList<Traveller> TravellersByOrder;
 	public Traveller(String name, int age ,String city, String preferedWeather,Enums.Museums preferedMuseums,Enums.CafeBarRestaur preferedCafesRestaurantsBars,ArrayList<String> preferedCities) throws IOException {
 		super();
 		//this.id=id;
+		this.timestamp=System.currentTimeMillis();
 		this.name = name;
 		this.age = age;
 		this.city=city;

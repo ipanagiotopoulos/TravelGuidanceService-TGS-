@@ -1,8 +1,9 @@
 package com.example.java2.Entities;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
+import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -10,6 +11,8 @@ import javax.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+
 
 @Document(collection = "users")
 public class User {
@@ -20,6 +23,7 @@ public class User {
   @Size(max = 20)
   private String username;
 
+  private List<Traveller> travellers=new ArrayList<Traveller>();
   @NotBlank
   @Size(max = 50)
   @Email
@@ -80,4 +84,13 @@ public class User {
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
   }
+
+public List<Traveller> getTravellers() {
+	return travellers;
+}
+
+public void setTravellers(List<Traveller> travellers) {
+	this.travellers = travellers;
+}
+  
 }

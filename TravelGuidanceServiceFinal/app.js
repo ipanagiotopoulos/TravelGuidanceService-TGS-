@@ -3,22 +3,33 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var fetch = require('node-fetch');
+const cookieParser = require('cookie-parser');
 var localStorage = require('localStorage');
 var jwt = require('jwt-simple');
- 
+var  middleware=require('./authentication-middleware')
+var jwt = require('jsonwebtoken');
+
+const exjwt = require('express-jwt');
 // app configurations
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false }));
-var jwt = require('jsonwebtoken');
-// RESTFUL ROUTES
+app.use(cookieParser())
 
+// RESTFUL ROUTES
+const secret="z97r#s"
+var infosuccess;
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-type,Authorization');
+  next();
+});
 
 
 app.get("/", function(req, res){
-    res.render("login");
+    res.render("login.ejs",{message:null});
 });
 app.post("/login",function(req,res){   //new endpoint  an implementation needed
   // LGTM!
@@ -47,12 +58,18 @@ app.post("/login",function(req,res){   //new endpoint  an implementation needed
       .then(response => {
         response.json()
           .then(responseJson => {
-           
              var decoded = jwt.decode(responseJson.accessToken, 'z97r#s');
+              username=decoded.username;
              if(decoded!=null){
-             role=decoded.role[0]["authority"];
+               payload={username};
+               const token=jwt.sign(payload,secret);
+              res.cookie('username', responseJson.username);
+              res.cookie('role', decoded.role[0]["authority"]);
+              res.cookie('token', token, { httpOnly: true});
+              
+              role=decoded.role[0]["authority"];
           
-            localStorage.setItem('token', responseJson.accessToken);
+             localStorage.setItem('token', responseJson.accessToken);
             if( role==="ROLE_USER"){
               res.render("index.ejs")
               }
@@ -60,11 +77,11 @@ app.post("/login",function(req,res){   //new endpoint  an implementation needed
                 res.render("adminindex.ejs")
               }
             else{
-                res.render("login.ejs");
+                res.render("login.ejs",{message:"Deactivated!"});
               }
             }
             else{
-              res.render("login.ejs");
+              res.render("login.ejs",{message:"Username or password incorrect!"});
             }
             //localStorage.setItem('token', responseJson.accessToken)
             // set localStorage with your preferred name,..
@@ -82,20 +99,31 @@ app.post("/login",function(req,res){   //new endpoint  an implementation needed
         console.error('Error:', error);
       });
 });
-app.get("/logedin", function(req, res) { 
+app.get("/logedin",middleware, function(req, res) { 
   res.render("index"); 
 }); 
-app.post("/logout",function(req,res){
-
+app.get("/logout",middleware  ,function(req,res){
+  cookie = req.cookies;
+  for (var prop in cookie) {
+      if (!cookie.hasOwnProperty(prop)) {
+          continue;
+      }    
+      res.cookie(prop, '', {expires: new Date(0)});
+  }
+  res.render("login.ejs",{message:"Succesfully loged out!"});
 });
-app.get("/admin",function(req,res) {
+
+app.get("/admin",middleware,function(req,res) {
 res.render("adminindex.ejs");
 });
 
 app.get("/register",function(req,res){
-  res.render("register");
+  infosuccess={
+    registrymessage:null
+  }
+  res.render("register",{message:infosuccess});
 });
-app.post("/registered",function(req,res){
+app.post("/registered",middleware,function(req,res){
   var message;
   fetch('http://localhost:8080/web/auth/signup',{
        
@@ -121,11 +149,10 @@ app.post("/registered",function(req,res){
         response.json()
           .then(responseJson => {
             console.log(responseJson);
-
             var decoded = jwt.decode(responseJson.accessToken, 'z97r#s');
             console.log(decoded);
             message=responseJson.message;
-            var infosuccess={
+            infosuccess={
               registrymessage:message
             }
              
@@ -134,7 +161,7 @@ app.post("/registered",function(req,res){
             res.render("index.ejs",{message:message});
              }
            else{
-            res.send({message:infosuccess});
+            res.render("register.ejs",{message:infosuccess});
              }
            
             // set localStorage with your preferred name,..
@@ -156,13 +183,13 @@ app.post("/registered",function(req,res){
 app.get("/information",function(req,res){});
 
 
-app.get("/offers", function(req, res){
+app.get("/offers", middleware  ,function(req, res){
     res.render("offers");
 });
  
-app.get("/results", function(req, res){
+app.get("/results",middleware , function(req, res){
   if(req.query.rainChoice==="notinterested"){
-    fetch('http://localhost:8080//Save'+req.query.category ,{
+    fetch('http://localhost:8080/web/api/Save'+req.query.category ,{
        
         method: "POST",
          
@@ -197,13 +224,14 @@ app.get("/results", function(req, res){
       });}
       else{
         console.log("edw");
-        fetch('http://localhost:8080/Save'+req.query.category+'BasedOnWeather' ,{
+        fetch('http://localhost:8080/web/api/Save'+req.query.category+'BasedOnWeather' ,{
        
         method: "POST",
          
         // Adding body or contents to send
         body: JSON.stringify(
             {
+                 
                 "name":req.query.name,
                  "age":req.query.age,
                  "city":req.query.currentCity,
@@ -211,6 +239,9 @@ app.get("/results", function(req, res){
                  "preferedMuseums":req.query.museums,
                  "preferedCafesRestaurantsBars":req.query.cafeBarResto,
                  "preferedCities":req.query.preferedCities
+             },
+             {
+             "username":cookies.username
              }
         ),
          
@@ -234,8 +265,9 @@ app.get("/results", function(req, res){
    
 });
  
-app.get("/administration", function(req, res){
-    fetch('http://localhost:8080/All'+req.query.choice)  //req.query.choice should be Traveller,Tourist or Business.
+app.get("/administration", middleware,function(req, res){
+  if(req.cookies.role[0]["authority"]==="ROLE_ADMIN"){
+    fetch('http://localhost:8080/web/api/All'+req.query.choice)  //req.query.choice should be Traveller,Tourist or Business.
   .then((response) => {
     return response.json();
   })
@@ -243,8 +275,15 @@ app.get("/administration", function(req, res){
     console.log(data);
     res.render("travellers",{data:data,typeoftraveller:req.query.choice});
   });
+}
+else{
+  res.send("Not admin");
+}
 });
-app.get("/freeticket",function(req,res){
+app.get("/freelotterysubmission",function(req,res){
+  res.render("UserLotteryDestinationSubmission.ejs");
+})
+app.get("/freeticket", middleware ,function(req,res){
   var token = localStorage.getItem('token');
   console.log(`Authorization=Bearer ${token}`)
   let headers = {"Content-Type": "application/json"};
@@ -252,7 +291,7 @@ app.get("/freeticket",function(req,res){
       headers["Authorization"] = ` Bearer ${token}`;
     }
     console.log( headers)
-  fetch('http://localhost:8080/AnyTraveller',{
+  fetch('http://localhost:8080/web/api/AnyTraveller',{
     headers: {
     "Content-type": "application/json; charset=UTF-8",
     "Authorization": ` Bearer ${token}`
@@ -266,16 +305,16 @@ app.get("/freeticket",function(req,res){
     res.render("freeticket",{data:data});
   })
 })
-app.post("/freeticketprocessing",function(req,res){
+app.post("/freeticketprocessing", middleware ,function(req,res){
  
 })
-app.post("/freeticketwinner",function(req,res){   //new endpoint  an implementation needed
+app.post("/freeticketwinner", middleware ,function(req,res){   //new endpoint  an implementation needed
   // LGTM!
   console.log(req.body.candidateCity);
  // HERE!!!!!!!!!!!
   console.log(req.body.type);
   var response;
-  fetch('http://localhost:8080/FreeTicket?city='+req.body.candidateCity,{
+  fetch('http://localhost:8080/web/api/FreeTicket?city='+req.body.candidateCity,{
        
         method: "POST",
  
@@ -300,10 +339,10 @@ app.post("/freeticketwinner",function(req,res){   //new endpoint  an implementat
         console.error('Error:', error);
       });
 });
-app.post("/removeTravellers",function(req,res){
+app.post("/removeTravellers",middleware,function(req,res){
   console.log(req.body.id);
   
-  fetch('http://localhost:8080/Delete'+req.body.typeoftraveller ,{
+  fetch('http://localhost:8080/web/api/Delete'+req.body.typeoftraveller ,{
        
         method: "POST",
          
@@ -329,6 +368,10 @@ app.post("/removeTravellers",function(req,res){
         console.error('Error:', error);
       });
 })
+
+app.get('/checkToken', middleware, function(req, res) {
+  res.sendStatus(200);
+});
 
 app.listen(5000, function() {
     console.log('Server up and running.');
