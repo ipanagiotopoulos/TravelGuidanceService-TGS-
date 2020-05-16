@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +27,11 @@ import com.example.java2.Repositories.CityRepository;
 import com.example.java2.Repositories.TouristRepository;
 import com.example.java2.Repositories.TravellerRepository;
 import com.example.java2.RetrieveData.OpenData;
+import com.example.java2.security.WebSecurityConfig;
+@CrossOrigin(origins = "*", maxAge = 3600)
 
+
+@Import(WebSecurityConfig.class)
 @RestController
 @RequestMapping("/web/api")
 public class Rest_controller {
@@ -133,6 +139,11 @@ public class Rest_controller {
         traveller.setVisit(visit);
         tr.save(traveller);
 		return visitCity;
+	}
+	@RequestMapping(value = "/GetSessions", method = RequestMethod.GET, produces = { "application/json",
+	"application/xml" })
+	public String GetSearchSessions(){
+		return "jwbdwubde";
 	}
 	@RequestMapping(value = "/SaveBusinessBasedOnWeather", method = RequestMethod.POST, produces = { "application/json",
 	"application/xml" })
