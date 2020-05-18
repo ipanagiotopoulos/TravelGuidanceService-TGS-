@@ -81,7 +81,7 @@ public class Service {
 		ArrayList<City> cities= new ArrayList<City>();
 		for (int i=0;i<preferedCities.size(); i++) {
 			String city=preferedCities.get(i);
-			cities.add(OpenData.RetrieveData(city));
+			cities.add(OpenData.RetrieveData(city,0,0));
 		}
         traveller2.CompareCities(cities);
 	}

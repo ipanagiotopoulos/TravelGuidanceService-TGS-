@@ -26,7 +26,11 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-type,Authorization');
   next();
 });
-
+app.use(function(req, res, next) {
+    if (!req.user)
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    next();
+});
 
 app.get("/", function(req, res){
     res.render("login.ejs",{message:null});
@@ -100,9 +104,36 @@ app.post("/login",function(req,res){   //new endpoint  an implementation needed
       });
 });
 app.get("/logedin",middleware, function(req, res) { 
+
   res.render("index"); 
 }); 
 app.get("/logout",middleware  ,function(req,res){
+  fetch('http://localhost:8080/web/auth/logout',{
+  method: "POST",
+ 
+  // Adding body or contents to send
+  body: JSON.stringify(
+    {
+       "username":req.body.username,
+        "password":req.body.password
+    }
+
+  ),
+   
+  // Adding headers to the request
+  headers: {
+      "Content-type": "application/json; charset=UTF-8"
+  }
+})
+.then((response) => response.json() //αυτο το κομμάτι θέλει βελτίωση με !reponse.ok,ώστε να βγάζει status code και μήνυμα στο χρήστη
+      )
+       
+      .then((data) => {
+      console.log('Success:', data);
+     
+      }).catch((error) => {
+        console.error('Error:', error);
+      });
   cookie = req.cookies;
   for (var prop in cookie) {
       if (!cookie.hasOwnProperty(prop)) {
@@ -110,11 +141,17 @@ app.get("/logout",middleware  ,function(req,res){
       }    
       res.cookie(prop, '', {expires: new Date(0)});
   }
-  res.render("login.ejs",{message:"Succesfully loged out!"});
+  res.redirect('/');
+ // res.render("login.ejs",{message:"Succesfully loged out!"});
 });
 
 app.get("/admin",middleware,function(req,res) {
+  if(req.cookies.role[0]["authority"]==="ROLE_ADMIN"){
 res.render("adminindex.ejs");
+  }
+  else{
+    res.send("Not authorized");
+  }
 });
 
 app.get("/register",function(req,res){
@@ -240,9 +277,6 @@ app.get("/results",middleware , function(req, res){
                  "preferedCafesRestaurantsBars":req.query.cafeBarResto,
                  "preferedCities":req.query.preferedCities
              },
-             {
-             "username":cookies.username
-             }
         ),
          
         // Adding headers to the request
@@ -277,7 +311,7 @@ app.get("/administration", middleware,function(req, res){
   });
 }
 else{
-  res.send("Not admin");
+  res.send("Not authorized");
 }
 });
 app.get("/freelotterysubmission",function(req,res){
@@ -313,7 +347,8 @@ app.post("/freeticketwinner", middleware ,function(req,res){   //new endpoint  a
   console.log(req.body.candidateCity);
  // HERE!!!!!!!!!!!
   console.log(req.body.type);
-  var response;
+  var response;if(req.cookies.role[0]["authority"]==="ROLE_ADMIN");
+  if(req.cookies.role[0]["authority"]==="ROLE_ADMIN"){
   fetch('http://localhost:8080/web/api/FreeTicket?city='+req.body.candidateCity,{
        
         method: "POST",
@@ -338,10 +373,16 @@ app.post("/freeticketwinner", middleware ,function(req,res){   //new endpoint  a
       }).catch((error) => {
         console.error('Error:', error);
       });
+    }
+    else{
+      res.send("Not authorized");
+    }
+    
+   
 });
 app.post("/removeTravellers",middleware,function(req,res){
   console.log(req.body.id);
-  
+  if(req.cookies.role[0]["authority"]==="ROLE_ADMIN"){
   fetch('http://localhost:8080/web/api/Delete'+req.body.typeoftraveller ,{
        
         method: "POST",
@@ -367,6 +408,9 @@ app.post("/removeTravellers",middleware,function(req,res){
         res.send("Fault");
         console.error('Error:', error);
       });
+    }else{
+      res.send("Not authorized");
+    }
 })
 
 app.get('/checkToken', middleware, function(req, res) {

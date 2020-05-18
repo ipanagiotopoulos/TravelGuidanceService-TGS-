@@ -28,6 +28,19 @@ public class Traveller implements Comparable {
 	private CafeBarRestaur preferedCafesRestaurantsBars;
 	public ArrayList<String> preferedCities;
 	public String visit;
+	private String CountryName;
+	public String getCountryName() {
+		return CountryName;
+	}
+
+
+
+	public void setCountryName(String countryName) {
+		CountryName = countryName;
+	}
+
+
+
 	/**
 	 * @param name
 	 * @param age

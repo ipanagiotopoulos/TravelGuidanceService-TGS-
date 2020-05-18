@@ -10,17 +10,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class City {
 	public static ArrayList<City> CitiesSession;
-	@Id
-    public String id;
-	public City(String id, int museums, String name, int cafesRestaurantsBars, String weather, double lat, double lon) {
+	public City( int museums, String name, int cafesRestaurantsBars, String weather, double lat, double lon,int timesvisited,int timeslived,String CountryName) {
 		super();
-		this.id = id;
 		this.museums = museums;
 		this.name = name;
 		this.cafesRestaurantsBars = cafesRestaurantsBars;
 		this.weather = weather;
 		this.lat = lat;
 		this.lon = lon;
+		this.timesvisited=timesvisited;
+		this.timeslived=timeslived;
+		this.CountryName=CountryName;
+		
 	}
 	public String getName() {
 		
@@ -31,13 +32,33 @@ public class City {
 	}
 	@Indexed
 	private int museums;
+	@Id
 	private String name;
 	private int cafesRestaurantsBars;
 	private String weather;
 	private double lat;
 	private double lon;
-	
-
+	private int timesvisited;
+	private int timeslived;
+	private String CountryName;
+	public int getTimesvisited() {
+		return timesvisited;
+	}
+	public void setTimesvisited(int timesvisited) {
+		this.timesvisited +=timesvisited;
+	}
+	public String getCountryName() {
+		return CountryName;
+	}
+	public void setCountryName(String countryName) {
+		CountryName = countryName;
+	}
+	public int getTimeslived() {
+		return timeslived;
+	}
+	public void setTimeslived(int timeslived) {
+		this.timeslived +=timeslived;
+	}
 	public int getMuseums() {
 		return museums;
 	}
@@ -76,13 +97,6 @@ public class City {
 
 	public void setLon(double lon) {
 		this.lon = lon;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 	public Traveller FreeTicket(List<Traveller> travellers) {
 		System.out.println("size"+travellers.size());
@@ -132,7 +146,7 @@ public class City {
       
   
    }
-	/*@Override
+	@Override
 	public boolean equals(Object o) {
 		 if (o == this) { 
 	            return true; 
@@ -142,20 +156,18 @@ public class City {
 	            return false; 
 	        } 
 		 else {
-			 City onew=(City) o;
-			 Collections.sor	
-			 if(CitiesSession.stream().map(City::name).filter(onew.getName()::equals).findFirst().isPresent()==true) {
+			 City newcity =(City) o;
+			 if(this.getLat()==newcity.getLat() && this.getLon()==newcity.getLon()) {
 				 return true;
 			 }	
 			 else {
-				 CitiesSession.add(onew);
 				 return false;
 			 }
 		 }
-	}*/
+	}
 	@Override
 	public String toString() {
-		return "City [id=" + id + ", museums=" + museums + ", name=" + name + ", cafesRestaurantsBars="
+		return "City [ museums=" + museums + ", name=" + name + ", cafesRestaurantsBars="
 				+ cafesRestaurantsBars + ", weather=" + weather + ", lat=" + lat + ", lon=" + lon + "]";
 	}
 	

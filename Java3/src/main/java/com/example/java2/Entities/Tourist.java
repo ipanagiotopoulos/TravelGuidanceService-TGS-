@@ -84,7 +84,6 @@ public class Tourist extends Traveller {
 				a=similarities.get(similarities.size()-1);
 			}
 		}
-		System.out.println(a+" "+cityfound.toString());
 		return cityfound.getName();
 	}
 	@Override

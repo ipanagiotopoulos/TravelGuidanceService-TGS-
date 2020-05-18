@@ -27,7 +27,7 @@ public class Business extends Traveller {
 				nearestcity=city;
 			}
 		}
-		System.out.println("City is"+nearestcity.toString());
+		
 		return nearestcity.getName();
 	}
 	@Override
